@@ -1,0 +1,26 @@
+/*
+
+Distributed Software Management System (DSMS)
+			Dependency File
+----------------------------------------------
+
+THIS INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+PURPOSE.
+
+WARNING: CHANGING ANY PORTION OF THIS FILE MAY RESULT IN FULL OR 
+PARTIAL FAILURE TO DOWNLOAD ACORDE COMPONENTS.
+
+Copyright (c) 2003  Optika, Inc. All Rights Reserved.
+
+
+*/
+
+//This causes the listed files to be installed whenever the Process Broker is installed
+EXTEND "WFBroker.dll"
+{
+	file "PayablesAVEScripts.exe" register
+	file "PayablesAveScripts.reg"
+	//file "RegInstaller2.exe" postinstall "PayablesAveScripts.reg <InstallPath>"
+}

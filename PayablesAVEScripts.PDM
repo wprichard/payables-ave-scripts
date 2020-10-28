@@ -1,0 +1,127 @@
+[Root]
+Most Recent Package=Payables AVE L4 Scripts DSMS deployment
+
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Root]
+SubWizProgID=PDWizard.SetupPkgSubWiz
+BuildFolder=C:\Acorde Payables\Payables Scripts\Package
+RA Server Support=No
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Configure DAO ISAMs]
+Applicable=No
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Configure DAO ODBC]
+JetWorkspace=
+ODBCDirect=
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Files Found]
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Files Released]
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Missing Dependency Information]
+C:\Program Files\Optika\Acorde\OTDocumentProvider.dll=
+C:\Program Files\Optika\Acorde\OTAcorde.dll=
+C:\Program Files\Optika\Acorde\OTProcess.dll=
+C:\Program Files\Optika\Acorde\OTEMail.dll=
+C:\Program Files\Common Files\System\ado\msado26.tlb=
+C:\Program Files\Optika\Acorde\OTWFscr.dll=
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Out-of-Date Dependency Information]
+C:\WINNT\system32\scrrun.dll=
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Files Added]
+c:\winnt\system32\autprx32.dll=This file is needed for RA server support.
+c:\winnt\system32\autmgr32.exe=This file is needed for RA server support.
+c:\winnt\system32\racmgr32.exe=This file is needed for RA server support.
+c:\acorde payables\payables scripts\payablesavescripts.reg=
+c:\acorde payables\payables scripts\payablesavescripts.dp5=
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Files Removed]
+c:\winnt\system32\autprx32.dll=
+c:\winnt\system32\autmgr32.exe=
+c:\winnt\system32\racmgr32.exe=
+c:\winnt\system32\mscomctl.ocx=
+c:\winnt\system32\racreg32.dll=
+c:\winnt\system32\odkob32.dll=
+c:\program files\common files\system\ado\msado26.tlb=
+c:\winnt\system32\msvcrt.dll=
+c:\program files\optika\acorde\otacorde.dll=
+c:\program files\optika\acorde\otdocumentprovider.dll=
+c:\program files\optika\acorde\otemail.dll=
+c:\program files\optika\acorde\otprocess.dll=
+c:\program files\optika\acorde\otwfscr.dll=
+c:\winnt\system32\scrrun.dll=
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Files In Project]
+C:\WINNT\system32\MSVBVM60.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\OLEAUT32.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\OLEPRO32.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\ASYCFILT.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\STDOLE2.TLB=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=Yes
+C:\Program Files\Optika\Acorde\OTWFscr.dll=No
+C:\Program Files\Common Files\System\ado\msado26.tlb=No
+C:\WINNT\system32\scrrun.dll=No
+C:\WINNT\system32\msvcrt.dll=No
+C:\Program Files\Optika\Acorde\OTEMail.dll=No
+C:\Program Files\Optika\Acorde\OTProcess.dll=No
+C:\Program Files\Optika\Acorde\OTAcorde.dll=No
+C:\Program Files\Optika\Acorde\OTDocumentProvider.dll=No
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=Yes
+C:\WINNT\system32\VB6StKit.dll=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=Yes
+C:\WINNT\system32\AUTPRX32.DLL=No
+C:\WINNT\system32\AUTMGR32.EXE=No
+C:\WINNT\system32\RACMGR32.EXE=No
+C:\WINNT\system32\MSCOMCTL.OCX=No
+C:\WINNT\system32\RACREG32.DLL=No
+C:\WINNT\system32\ODKOB32.DLL=No
+C:\Acorde Payables\Payables Scripts\PayablesAVEScripts.reg=Yes
+C:\Acorde Payables\Payables Scripts\PayablesAVEScripts.dp5=Yes
+C:\Acorde Payables\Payables Scripts\PayablesAVEScripts.exe=Yes
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Configure Registry Files]
+Applicable=Yes
+C:\Acorde Payables\Payables Scripts\PayablesAVEScripts.reg=Install
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Configure Remote Servers]
+Applicable=No
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Install Locations]
+C:\Acorde Payables\Payables Scripts\PayableAVEScripts.exe=$(AppPath)
+C:\WINNT\system32\MSVBVM60.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\OLEAUT32.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\OLEPRO32.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\ASYCFILT.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\STDOLE2.TLB=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=$(AppPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=$(WinPath)
+C:\WINNT\system32\VB6StKit.dll=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=$(WinPath)
+C:\Acorde Payables\Payables Scripts\PayablesAVEScripts.reg=$(AppPath)
+C:\Acorde Payables\Payables Scripts\PayablesAVEScripts.dp5=$(AppPath)
+C:\Acorde Payables\Payables Scripts\PayablesAVEScripts.exe=$(AppPath)
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Configure Shared Files]
+Applicable=Yes
+C:\Acorde Payables\Payables Scripts\PayableAVEScripts.exe=No
+C:\Acorde Payables\Payables Scripts\PayablesAVEScripts.reg=No
+C:\Acorde Payables\Payables Scripts\PayablesAVEScripts.dp5=No
+C:\Acorde Payables\Payables Scripts\PayablesAVEScripts.exe=No
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Distribution]
+Type=single
+Size=
+Title=Payables AVE L4 Scripts DSMS deployment
+
+[Package|Payables AVE L4 Scripts DSMS deployment|Package]
+PackageFolder=C:\Acorde Payables\Payables Scripts\Package
+ProjectFolder=C:\Acorde Payables\Payables Scripts
+ServerSideCab=
+File1=C:\Acorde Payables\Payables Scripts\Package\setup.exe
+File2=C:\Acorde Payables\Payables Scripts\Package\Setup.Lst
+File3=C:\Acorde Payables\Payables Scripts\Package\PayablesAVEScripts.CAB
+Handler1=PDWizard.FolderDplySubWiz
+Handler2=PDWizard.WebPostDplySubWiz

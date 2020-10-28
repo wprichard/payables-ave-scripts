@@ -1,0 +1,757 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--
+ 	             Copyright © 2000 Optika Inc.  All rights reserved. 
+
+The contents of this file, and any associated files, are considered confidential,
+proprietary, and remain the property of Optika.  This file, and/or its
+contents, may not be re-used without prior written permission of Optika.
+The ideas, designs, and programming set forth in this file are the property
+of Optika and are not to be copied, disseminated or distributed to third
+parties without the written permission of Optika.
+
+-->
+
+<html>
+
+<head>
+<title>Acorde Process Script Debugging Driver</title>
+
+<script language="JScript">
+<!--
+	// variables are 'name-mangled' so they don't get stomped on by user code
+	var __ver4__ = (parseInt(navigator.appVersion) >= 4) ? true : false;
+	var __IE__ = (document.all == null) ? false : true;
+
+	var obj__User__ = null;
+	var obj__User__Token__ = null;
+	var obj__Databases__ = null;
+	var obj__Database__ = null;
+	var obj__Profiles__ = null;
+	var obj__Profile__ = null;
+	var obj__Packages__ = null;
+	var obj__Package__ = null;
+	var obj__Context__Object__Map__ = new Object();
+
+	function onLoad()
+	{
+		var bPDCLoginSuccessful;
+
+		if (!__ver4__ || !__IE__)
+		{
+			alert("This page requires Internet Explorer version 4.0 or higher.");
+			return;
+		}
+
+		try
+		{
+			obj__User__ = new ActiveXObject("OptikaTK.User");
+			if (obj__User__ == null)
+			{
+				alert("Could not access Optika Toolkit.  Please ensure that this page is run on a system that has the Optika Toolkit installed and that SockTool.dll is in the Internet Explorer path.");
+				return;
+			}
+		}
+		catch (e)
+		{
+			alert("Could not access Optika Toolkit: " + e.description + ".  Please ensure that this page is run on a system that has the Optika Toolkit installed and that SockTool.dll is in the Internet Explorer path.");
+			return;
+		}
+
+		while (obj__User__Token__ == null)
+		{
+			try
+			{
+				obj__User__Token__ = obj__User__.Login("", "", true);
+				if (obj__User__Token__ == null)
+				{
+					alert("Invalid login.");
+				}
+			}
+			catch (e)
+			{
+				if (e.number == -2147023570) // invalid credentials
+				{
+					alert(e.description);
+				}
+				else
+				{
+					if (e.number != -2147023673) // cancel button not pressed
+					{
+						alert("Login failed due to runtime exception: " + e.description);
+					}
+					alert("Exiting ...");
+					return;
+				}
+			}
+		}
+
+		try
+		{
+			obj__Databases__ = new ActiveXObject("OptikaTK.Databases");
+			if (obj__Databases__ == null)
+			{
+				alert("Could not open Acorde Process Databases collection.");
+				return;
+			}
+			obj__Databases__.Refresh();
+		}
+		catch (e)
+		{
+			alert("Could not open Acorde Process Databases collection due to runtime exception: " + e.description);
+			return;
+		}
+
+		for (var i=1; i<=obj__Databases__.Count; i++)
+		{
+			obj__Database__ = obj__Databases__(i);
+			var newOption = document.createElement("OPTION");
+			newOption.text = obj__Database__.DatabaseName;
+			newOption.value = i;
+			document.all.fsdDatabase.options.add(newOption);
+		}
+
+		document.all.divSelectDatabase.style.visibility = "visible";
+
+	}
+
+	function onClickFormLoginPromptCancel()
+	{
+		document.all.divLoginPrompt.style.visibility = "hidden";
+		alert("Cannot proceed without a valid logon.");
+	}
+
+	function onSubmitFormSelectDatabase()
+	{
+		document.all.divSelectDatabase.style.visibility = "hidden";
+		var index = parseInt(document.all.fsdDatabase.value);
+		try
+		{
+			obj__Database__ = obj__Databases__(index);
+			if (obj__Database__ == null)
+			{
+				alert("Could not open selected Acorde Process Database.");
+				return;
+			}
+		}
+		catch (e)
+		{
+			alert("Runtime exception while opening Acorde Process Database: " + e.description);
+			return;
+		}
+
+		try
+		{
+			obj__Database__.Connect(obj__User__Token__);
+		}
+		catch (e)
+		{
+			alert("Runtime exception while connecting to Acorde Process Database: " + e.description);
+			return;
+		}
+
+		try
+		{
+			obj__Profiles__ = new ActiveXObject("OptikaTK.Profiles");
+			if (obj__Profiles__ == null)
+			{
+				alert("Could not open selected Acorde Process Profiles collection.");
+				return;
+			}
+		}
+		catch (e)
+		{
+			alert("Runtime exception while manipulating Acorde Process Profiles collection: " + e.description);
+			return;
+		}
+
+		try
+		{
+			obj__Profiles__.UserToken = obj__User__Token__;
+			obj__Profiles__.Refresh();
+		}
+		catch (e)
+		{
+			alert("Runtime exception while manipulating Acorde Process Profiles collection: " + e.description);
+			return;
+		}
+
+		for (var i=1; i<=obj__Profiles__.Count; i++)
+		{
+			var objTempProfile = obj__Profiles__(i);
+			var newOption = document.createElement("OPTION");
+			newOption.text = objTempProfile.ProfileName;
+			newOption.value = i;
+			document.all.fspProfile.options.add(newOption);
+		}
+
+		document.all.divSelectProfile.style.visibility = "visible";
+
+	}
+
+	function onClickFormSelectDatabaseCancel()
+	{
+		document.all.divSelectDatabase.style.visibility = "hidden";
+		alert("Exiting ...");
+	}
+
+	function onSubmitFormSelectProfile()
+	{
+		document.all.divSelectProfile.style.visibility = "hidden";
+		var index = parseInt(document.all.fspProfile.value);
+		try
+		{
+			obj__Profile__ = obj__Profiles__(index);
+			if (obj__Profile__ == null)
+			{
+				alert("Could not open selected Acorde Process Profile.");
+				return;
+			}
+		}
+		catch (e)
+		{
+			alert("Runtime exception while opening Acorde Process Profile: " + e.description);
+			return;
+		}
+
+		try
+		{
+			obj__Packages__ = new ActiveXObject("OptikaTK.Packages");
+			if (obj__Packages__ == null)
+			{
+				alert("Could not open selected Acorde Process Packages collection.");
+				return;
+			}
+		}
+		catch (e)
+		{
+			alert("Runtime exception while manipulating Acorde Process Packages collection: " + e.description);
+			return;
+		}
+
+		try
+		{
+			obj__Packages__.UserToken = obj__User__Token__;
+			obj__Packages__.Profile = obj__Profile__;
+			obj__Packages__.Refresh();
+		}
+		catch (e)
+		{
+			alert("Runtime exception while manipulating Acorde Process Packages collection: " + e.description);
+			return;
+		}
+
+	// clear the Package in the case where we are changing previous values
+		obj__Package__ = null;
+
+		for (var i=1; i<=obj__Packages__.Count; i++)
+		{
+			var objTempPackage = obj__Packages__(i);
+			var newOption = document.createElement("OPTION");
+			newOption.text = objTempPackage.Title + " : ID = " + objTempPackage.PkgId + ", Process = " + objTempPackage.ProcessName;
+			newOption.value = i;
+			document.all.fspPackage.options.add(newOption);
+		}
+
+		document.all.divSelectPackage.style.visibility = "visible";
+
+	}
+
+	function onClickFormSelectProfileCancel()
+	{
+		document.all.divSelectProfile.style.visibility = "hidden";
+		if (obj__Profile__ != null)
+		{
+			document.all.divEstablishContext.style.visibility = "visible";
+		}
+		else
+		{
+			alert("Exiting ...");
+		}
+	}
+
+	function onSubmitFormSelectPackage()
+	{
+		document.all.divSelectPackage.style.visibility = "hidden";
+		var index = parseInt(document.all.fspPackage.value);
+		try
+		{
+			obj__Package__ = obj__Packages__(index);
+			if (obj__Package__ == null)
+			{
+				alert("Could not open selected Acorde Process Package.");
+				return;
+			}
+		}
+		catch (e)
+		{
+			alert("Runtime exception while opening Acorde Process Package: " + e.description);
+		return;
+		}
+
+		document.all.fecDatabase.value = obj__Database__.DatabaseName;
+		document.all.fecProfile.value = obj__Profile__.ProfileName;
+		document.all.fecPackage.value = obj__Package__.Title + " : ID = " + obj__Package__.PkgId + ", Process = " + obj__Package__.ProcessName;
+		document.all.divEstablishContext.style.visibility = "visible";
+
+	}
+
+	function onClickFormSelectPackageCancel()
+	{
+		document.all.divSelectPackage.style.visibility = "hidden";
+		if (obj__Package__ != null)
+		{
+			document.all.divEstablishContext.style.visibility = "visible";
+		}
+		else
+		{
+			alert("Exiting ...");
+		}
+	}
+
+	function onSubmitFormEstablishContext()
+	{
+		var sExtendedContext;
+
+		try
+		{
+			var objExecutionContext = new ActiveXObject("OptikaTK.ScriptExecContext");
+			if (objExecutionContext == null)
+			{
+				alert("Could not create execution context.");
+				return;
+			}
+		}
+		catch (e)
+		{
+			alert("Could not create execution context due to runtime exception: " + e.description);
+			return;
+		}
+
+		try
+		{
+			objExecutionContext.UserToken = obj__User__Token__;
+		}
+		catch (e)
+		{
+			alert("Could not set execution context user token due to runtime exception: " + e.description);
+			return;
+		}
+
+		try
+		{
+			var objXMLDOM = new ActiveXObject("Msxml.DOMDocument");
+			if (objXMLDOM == null)
+			{
+				alert("Could not create XML DOM.");
+				return;
+			}
+		}
+		catch (e)
+		{
+			alert("Could not create XML DOM due to runtime exception: " + e.description);
+			return;
+		}
+
+		try
+		{
+			var objRoot = objXMLDOM.createElement("ExtendedContext");
+			objXMLDOM.appendChild(objRoot);
+
+			var objCausalAction = objXMLDOM.createElement("CausalAction");
+			objCausalAction.text = document.all.fecCausalAction.value;
+			objRoot.appendChild(objCausalAction);
+
+			var objContextObjects = objXMLDOM.createElement("ContextObjects");
+			objRoot.appendChild(objContextObjects);
+			for (index in obj__Context__Object__Map__)
+			{
+				var objMapObject = obj__Context__Object__Map__[index];
+				if (objMapObject != null)
+				{
+					var objContextObject = objXMLDOM.createElement("ContextObject");
+					objContextObjects.appendChild(objContextObject);
+
+					var objType = objXMLDOM.createElement("Type");
+					objType.text = objMapObject.type;
+					objContextObject.appendChild(objType);
+
+					var objName = objXMLDOM.createElement("Name");
+					objName.text = objMapObject.name;
+					objContextObject.appendChild(objName);
+
+					var objID = objXMLDOM.createElement("ID");
+					objID.text = objMapObject.ID;
+					objContextObject.appendChild(objID);
+				}
+			}
+
+			sExtendedContext = objXMLDOM.xml;
+
+		}
+		catch (e)
+		{
+			alert("Runtime exception while manipulating Microsoft XML DOM: " + e.description);
+			return;
+		}
+
+		try
+		{
+			objExecutionContext.ExtendedContextType = "text/xml";
+			objExecutionContext.ExtendedContext = sExtendedContext;
+			objExecutionContext.Package = obj__Package__;
+		}
+		catch (e)
+		{
+			alert("Runtime exception while manipulating Execution Context object: " + e.description);
+			return;
+		}
+
+		debugger; // kick-start the Microsoft Script Debugger
+
+		// if FrameworkMain throws a runtime exception, it's most likely due to an unparseable script
+		try
+		{
+			ProcessScriptingFrameworkMain(objExecutionContext);
+		}
+		catch (e)
+		{
+			alert("Execution of the script's main function failed!\r\n(Check for script syntax errors)")
+		}
+		try
+		{
+			document.all.flrReturnValue.value = objExecutionContext.ResultStatus;
+			document.all.flrError.value = objExecutionContext.ErrorDescription;
+			document.all.flrResultEvent.value = objExecutionContext.ResultEvent;
+		}
+		catch (e)
+		{
+			alert("Runtime exception while manipulating Execution Context object: " + e.description);
+			return;
+		}
+
+		document.all.divLastResults.style.visibility = "visible";
+	}
+	function onClickChangeDatabase(sCurrentDiv)
+	{
+		document.all[sCurrentDiv].style.visibility = "hidden";
+		document.all.divLastResults.style.visibility = "hidden";
+		document.all.divSelectDatabase.style.visibility = "visible";
+	}
+
+	function onClickChangeProfile(sCurrentDiv)
+	{
+		document.all[sCurrentDiv].style.visibility = "hidden";
+		document.all.divLastResults.style.visibility = "hidden";
+
+		var length = document.all.fspPackage.length;
+		for (var i=0; i<length; i++)
+		{
+			document.all.fspPackage.options.remove(0);
+		}
+
+		document.all.divSelectProfile.style.visibility = "visible";
+	}
+
+	function onClickChangePackage(sCurrentDiv)
+	{
+		document.all[sCurrentDiv].style.visibility = "hidden";
+		document.all.divLastResults.style.visibility = "hidden";
+
+		if (document.all.fspPackage.length == 0)
+		{
+			for (var i=1; i<=obj__Packages__.Count; i++)
+			{
+				var objTempPackage = obj__Packages__(i);
+				var newOption = document.createElement("OPTION");
+				newOption.text = objTempPackage.Title + " : ID = " + objTempPackage.PkgId + ", Process = " + objTempPackage.ProcessName;
+				newOption.value = i;
+				document.all.fspPackage.options.add(newOption);
+			}
+		}
+
+		document.all.divSelectPackage.style.visibility = "visible";
+	}
+
+	function onClickAddContextObject()
+	{
+		document.all.divEstablishContext.style.visibility = "hidden";
+		document.all.fcoType.value = "";
+		document.all.fcoName.value = "";
+		document.all.fcoID.value = "";
+		document.all.divAddContextObject.style.visibility = "visible";
+	}
+
+	function onClickDeleteContextObject()
+	{
+		if (document.all.fecContextObjects.selectedIndex >= 0)
+		{
+			obj__Context__Object__Map__[document.all.fecContextObjects.options[document.all.fecContextObjects.selectedIndex].value]
+				= null;
+			document.all.fecContextObjects.options.remove(document.all.fecContextObjects.selectedIndex);
+		}
+	}
+
+	function onClickFormEstablishContextCancel()
+	{
+		document.all.divEstablishContext.style.visibility = "hidden";
+		document.all.divLastResults.style.visibility = "hidden";
+		alert("Exiting ...");
+	}
+
+	function onSubmitFormAddContextObject()
+	{
+		var objContextObject = new Object();
+		var newOption;
+
+		objContextObject.type = document.all.fcoType.value;
+		objContextObject.name = document.all.fcoName.value;
+		objContextObject.ID = document.all.fcoID.value;
+		sKey = "key" + document.all.fcoID.value;
+
+		if (obj__Context__Object__Map__[sKey] != null && obj__Context__Object__Map__[sKey] != null)
+		{
+			for (var i=0; i<document.all.fecContextObjects.length; i++)
+			{
+				if (document.all.fecContextObjects.options[i].value == sKey)
+				{
+					document.all.fecContextObjects.options.remove(i);
+				}
+			}
+		}
+
+		obj__Context__Object__Map__[sKey] = objContextObject;
+
+		newOption = document.createElement("OPTION");
+		newOption.text = objContextObject.type +  " : " + objContextObject.name + " : " + objContextObject.ID;
+		newOption.value = sKey;
+
+		document.all.fecContextObjects.options.add(newOption);
+
+		document.all.divAddContextObject.style.visibility = "hidden";
+		document.all.divEstablishContext.style.visibility = "visible";
+	}
+
+	function onClickFormAddContextObjectCancel()
+	{
+		document.all.divAddContextObject.style.visibility = "hidden";
+		document.all.divEstablishContext.style.visibility = "visible";
+	}
+
+	function onUnload()
+	{
+		if (obj__User__ != null)
+		{
+			try
+			{
+				obj__User__.Logout(obj__User__Token__);
+			}
+			catch (e)
+			{
+			}
+		}
+		obj__User__ = null;
+		obj__User__Token__ = null;
+		obj__Databases__ = null;
+		obj__Database__ = null;
+		obj__Profiles__ = null;
+		obj__Profile__ = null;
+		obj__Packages__ = null;
+		obj__Package__ = null;
+	}
+
+//-->
+</script>
+
+<script language="VBScript">
+<!--
+Sub ProcessScriptingFrameworkMain(objExecutionContext)
+
+  On Error Resume Next
+  Err.Clear
+
+  If objExecutionContext Is Nothing Then Exit Sub
+  objExecutionContext.ResultStatus = True
+  ProcessScriptingFramework1(objExecutionContext)
+  If Eval("Err.Number <> 0") Then
+    objExecutionContext.ErrorDescription = objExecutionContext.ErrorDescription & _
+      "Module ProcessScriptingFramework1 propagated an error: """ & Err.Description & """.  Script execution terminated." & vbCrLf
+    objExecutionContext.ResultStatus = False
+    Exit Sub
+  End If
+
+  If objExecutionContext.IsAbortSignaled Then
+    objExecutionContext.ErrorDescription = objExecutionContext.ErrorDescription & "Script execution aborted per client request." & vbCrLf
+    objExecutionContext.ResultStatus = False
+    Exit Sub
+  End If
+
+  If Eval(objExecutionContext.ErrorDescription <> "") Then
+    objExecutionContext.ResultStatus = False
+  End If
+End Sub
+
+Sub ProcessScriptingFramework1(objExecutionContext)
+    ScriptExecute (objExecutionContext)    '(copy this line only into script)
+End Sub
+
+
+Sub ScriptExecute(objExecutionContext)
+'This procedure invokes a custom DLL to perform the actual processing.
+ 
+Dim objUpdate
+ 
+    On Error Resume Next
+ 
+    'Instantiate an object from the custom scripts DLL
+    Set objUpdate = CreateObject("PayablesAVEScripts.cEmailSummary")
+
+    'If an error occurred then...
+    If Eval("Err.Number <> 0") Then
+        objExecutionContext.ResultStatus = False
+        objExecutionContext.ErrorDescription = objExecutionContext.ErrorDescription & " (Error creating LookupApprovers.cLookupApprover: " & Err.Description & ")"
+        Exit Sub
+    End If
+
+    'Execute the Update for the current package
+    objUpdate.Execute (objExecutionContext)
+
+    If Eval("Err.Number <> 0") Then
+        objExecutionContext.ResultStatus = False
+        objExecutionContext.ErrorDescription = objExecutionContext.ErrorDescription & " (Error in .Execute: " & Err.Description & ")"
+        Exit Sub
+    End If
+
+    objExecutionContext.ResultStatus = True
+
+End Sub
+
+'-->
+</script>
+
+
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080" alink="#ff0000" onload="onLoad();" onunload = "onUnload();">
+
+<noscript>
+<p>This page requires Microsoft JScript, which your browser does not currently support.  Please enable JScript or upgrade to Internet Explorer version 4.0 (version 5.0 is recommended) or higher.</p>
+</noscript>
+<script language="JScript">
+<!--
+	if (!__ver4__ || !__IE__)
+	{
+		document.writeln("<p>This page requires Internet Explorer version 4.0 (version 5.0 is recommended) or " + 
+			"higher, which your browser is not.  The debugging features of the page will not operate correctly in " + 
+			"this browser.  Please reopen the page in Internet Explorer.</p>");
+	}
+//-->
+</script>
+
+<div id="divSelectDatabase" style="position: absolute; z-index: 20; visibility: hidden; top: 50px; left: 50px">
+<table border="1" bordercolor="#000000" cellpadding="5" cellspacing="0">
+<tr>
+<td bgcolor="#C0C0C0" width="500" style="text-align: center"/>
+<form id="formSelectDatabase" onsubmit="onSubmitFormSelectDatabase(); return false;">
+<br/>
+Select a Database: <select name="fsdDatabase" id="fsdDatabase"></select><br/>
+<br/>
+<input type="submit" value="OK"/>
+<input type="button" value="Cancel" onclick="onClickFormSelectDatabaseCancel(); return true;"/>
+</form>
+</tr>
+</table>
+</div>
+
+<div id="divSelectProfile" style="position: absolute; z-index: 20; visibility: hidden; top: 50px; left: 50px">
+<table border="1" bordercolor="#000000" cellpadding="5" cellspacing="0">
+<tr>
+<td bgcolor="#C0C0C0" width="500" style="text-align: center"/>
+<form id="formSelectProfile" onsubmit="onSubmitFormSelectProfile(); return false;">
+<br/>
+Select a Profile: <select name="fspProfile" id="fspProfile"></select><br/>
+<br/>
+<input type="submit" value="OK"/>
+<input type="button" value="Cancel" onclick="onClickFormSelectProfileCancel(); return true;"/>
+</form>
+</tr>
+</table>
+</div>
+
+<div id="divSelectPackage" style="position: absolute; z-index: 20; visibility: hidden; top: 50px; left: 50px">
+<table border="1" bordercolor="#000000" cellpadding="5" cellspacing="0">
+<tr>
+<td bgcolor="#C0C0C0" width="800" style="text-align: center"/>
+<form id="formSelectPackage" onsubmit="onSubmitFormSelectPackage(); return false;">
+<br/>
+Select a Package: <select name="fspPackage" id="fspPackage"></select><br/>
+<br/>
+<input type="submit" value="OK"/>
+<input type="button" value="Cancel" onclick="onClickFormSelectPackageCancel(); return true;"/>
+</form>
+</tr>
+</table>
+</div>
+
+<div id="divEstablishContext" style="position: absolute; z-index: 20; visibility: hidden; top: 50px; left: 50px">
+<table border="1" bordercolor="#000000" cellpadding="5" cellspacing="0">
+<tr>
+<td bgcolor="#C0C0C0" width="700" style="text-align: center"/>
+<form id="formEstablishContext" onsubmit="onSubmitFormEstablishContext(); return false;">
+<br/>
+Causal Action: <input type="text" name="fecCausalAction" id="fecCausalAction"/><br/>
+<br/>
+Context Objects: <select name="fecContextObjects" id="fecContextObjects"></select>
+<input type="button" value="Add" onclick="onClickAddContextObject(); return true;"/>
+<input type="button" value="Delete" onclick="onClickDeleteContextObject(); return true;"/><br/>
+<br/>
+Database: <input type="text" name="fecDatabase" id="fecDatabase" value="" size="60" readonly="readonly"/><br/>
+Profile: <input type="text" name="fecProfile" id="fecProfile" value="" size="62" readonly="readonly"/><br/>
+Package: <input type="text" name="fecPackage" id="fecPackage" value="" size="61" readonly="readonly"/><br/>
+<br/>
+<input type="button" value="Change Profile" onclick="onClickChangeProfile('divEstablishContext'); return true;"/>
+<input type="button" value="Change Package" onclick="onClickChangePackage('divEstablishContext'); return true;"/>
+<br/><br/>
+<input type="submit" value="Run Script"/>
+<input type="button" value="Cancel" onclick="onClickFormEstablishContextCancel(); return true;"/>
+</form>
+</tr>
+</table>
+</div>
+
+<div id="divAddContextObject" style="position: absolute; z-index: 20; visibility: hidden; top: 100px; left: 100px">
+<table border="1" bordercolor="#000000" cellpadding="5" cellspacing="0">
+<tr>
+<td bgcolor="#C0C0C0" width="500" style="text-align: center"/>
+<form id="formAddContextObject" onsubmit="onSubmitFormAddContextObject(); return false;">
+<br/>
+Type: <input type="text" name="fcoType" id="fcoType" size="30"/><br/>
+Name: <input type="text" name="fcoName" id="fcoName" size="29"/><br/>
+ID: <input type="text" name="fcoID" id="fcoID" size="32"/><br/>
+<br/>
+<input type="submit" value="Add"/>
+<input type="button" value="Cancel" onclick="onClickFormAddContextObjectCancel(); return true;"/>
+</form>
+</tr>
+</table>
+</div>
+
+<div id="divLastResults" style="position: absolute; z-index: 20; visibility: hidden; top: 400px; left: 50px">
+<table border="1" bordercolor="#000000" cellpadding="5" cellspacing="0">
+<tr>
+<td bgcolor="#C0C0C0" width="700" style="text-align: center"/>
+<form id="formLastResults">
+<br/>
+Last Results:<br/>
+<br/>
+Returned Value: <input type="text" name="flrReturnValue" id="flrReturnValue" size="47" readonly="readonly"/><br/>
+ResultEvent: <input type="text" name="flrResultEvent" id="flrResultEvent" size="50" readonly="readonly"/><br/>
+Error Description: <textarea name="flrError" id="flrError" cols="35" rows="3" readonly="readonly"/><br/><br/>
+</form>
+</tr>
+</table>
+</div>
+
+</body>
+
+</html>

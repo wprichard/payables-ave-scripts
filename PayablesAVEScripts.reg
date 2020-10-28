@@ -1,0 +1,19 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\OptikaCustom\cLookupApprovers]
+"LogEnabled"="True"
+"DB Name"="Payables"
+"DB Password"="acorde"
+"DB Server"="greatplains"
+"DB User"="sa"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\OptikaCustom\EmailSummary]
+"LogEnabled"="True"
+"LogMin"="999"
+"LogMax"="5001"
+"LogType"="circular"
+"Web Server"="SOL-23"
+"Threshold Interval Unit"="d"
+"Threshold Interval Number"="1"
+"Mail Mode"="SMTP"
+
